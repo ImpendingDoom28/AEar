@@ -23,7 +23,7 @@ def binaryMask(source=None, target=None) -> np.ndarray:
         sourceItem = iterator[0]
         targetItem = target[iterator.multi_index]
 
-        if np.abs(targetItem) > np.abs(sourceItem.real):
+        if np.abs(targetItem) > np.abs(sourceItem):
             mask[iterator.multi_index] = 1
 
         iterator.iternext()
