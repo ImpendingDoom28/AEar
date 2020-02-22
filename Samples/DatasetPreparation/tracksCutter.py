@@ -18,10 +18,12 @@ def divide_audio_into_frames(song, frames=9) -> None:
     song_stft = librosa.stft(librosa.to_mono(song.audio.T))
     parts = ceil(song_stft.shape[1] / frames)
     for i in range(parts - 1):
-        mask = binary_mask(accompaniment_stft[:, i * frames: i * frames + frames],
-                           vocals_stft[:, i * frames: i * frames + frames])
+        # mask = binary_mask(accompaniment_stft[:, i * frames: i * frames + frames],
+        #                    vocals_stft[:, i * frames: i * frames + frames])
+        mask_for_middle_part = binary_mask(accompaniment_stft[:, i * frames // 2],
+                         vocals_stft[:, i * frames // 2])
         track_part = song_stft[:, i * frames: i * frames + frames]
-        save_track_and_its_mask(track_part, mask)
+        save_track_and_its_mask(track_part, mask_for_middle_part)
     return
 
 
