@@ -19,8 +19,10 @@ STFTOfTheWholeSong = librosa.stft(librosa.to_mono(song.audio.T))  # Преобр
 
 STFTOfTheVocals = np.abs(librosa.stft(librosa.to_mono(vocals.audio.T)))  # Преобразование Фурье от дорожки вокала
 # Отображение спектрограммы вокала
-# librosa.display.specshow(librosa.amplitude_to_db(np.abs(STFTOfTheVocals), ref=np.max), y_axis='log', x_axis='time')
-# plt.show()
+librosa.display.specshow(librosa.amplitude_to_db(np.abs(STFTOfTheVocals), ref=np.max), y_axis='log', x_axis='time',
+                         sr=44100)
+plt.savefig("./transparent/vox_spec.png", transparent=True)
+plt.show()
 
 STFTOfTheAccompaniment = np.abs(
     librosa.stft(librosa.to_mono(accompaniment.audio.T)))  # Преобразование Фурье от аккомпанимента
