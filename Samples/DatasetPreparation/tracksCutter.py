@@ -1,4 +1,3 @@
-from math import ceil
 import os
 import librosa
 import musdb
@@ -16,13 +15,13 @@ def divide_audio_into_frames(song, frames=9) -> None:
     vocals_stft = librosa.stft(librosa.to_mono(song.targets['vocals'].audio.T))
     accompaniment_stft = librosa.stft(librosa.to_mono(song.targets['accompaniment'].audio.T))
     song_stft = librosa.stft(librosa.to_mono(song.audio.T))
-    parts = ceil(song_stft.shape[1] / frames)
-    for i in range(parts - 1):
+    for i in range(song_stft.shape[1] - frames):
         # mask = binary_mask(accompaniment_stft[:, i * frames: i * frames + frames],
         #                    vocals_stft[:, i * frames: i * frames + frames])
-        mask_for_middle_part = binary_mask(accompaniment_stft[:, i * frames // 2],
-                         vocals_stft[:, i * frames // 2])
-        track_part = song_stft[:, i * frames: i * frames + frames]
+        mask_for_middle_part = binary_mask(accompaniment_stft[:, (i + frames - 1) // 2],
+                                           vocals_stft[:, (i + frames - 1) // 2])
+        track_part = song_stft[:, i: i + frames]
+
         save_track_and_its_mask(track_part, mask_for_middle_part)
     return
 
@@ -63,7 +62,6 @@ def save_track_and_its_mask(track, mask, directory_to_save='dataset'):
         os.mkdir(directory_to_save)
         os.mkdir(directory_to_save + '/tracks')
         os.mkdir(directory_to_save + '/masks')
-    # print('Saving ' + str(TRACK_NAME) + 'track_file')
     write(directory_to_save + '/tracks/' + str(TRACK_NAME) + '.wav', 44100, librosa.istft(track))
     np.save(directory_to_save + '/masks/' + str(TRACK_NAME), mask)
     TRACK_NAME += 1
