@@ -1,14 +1,17 @@
 import librosa
-
+import numpy as np
 
 class Song(object):
 
     def __init__(self, track, part_size=25):
-        self.stft = librosa.stft(librosa.to_mono(track.audio.T))
+        self.stft = librosa.stft(librosa.to_mono(track))
+        padding = np.zeros((self.stft.shape[0], part_size // 2))
+        self.stftPadded = np.abs(
+            np.concatenate((padding, librosa.stft(librosa.to_mono(track)), padding, padding), axis=1))
         self.size = part_size
 
     def __iter__(self):
-        return Song.SongIterator(self.stft, self.size)
+        return Song.SongIterator(self.stftPadded, self.size)
 
     class SongIterator:
 
