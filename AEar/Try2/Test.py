@@ -4,10 +4,35 @@ import tensorflow as tf
 import numpy as np
 from scipy.io.wavfile import write
 import time
+import sys, getopt
 
-BINARIZATION_COEFF = 0.285
-VOCAL_SENSITIVITY = 0.9
-SMOOTH_RANGE = 12
+print('Args:', str(sys.argv))
+
+BIN_COEF = 0
+SOUND_SMOOTHING = 0
+VOCAL_SENSITIVITY = 0
+FILE_NAME = ''
+
+
+def handler(argv):
+    global BIN_COEF, SOUND_SMOOTHING, VOCAL_SENSITIVITY
+    try:
+        list = getopt.gnu_getopt(argv, "filenameb:s:v:")
+        print(list)
+    except getopt.GetoptError:
+        print('Usage: <filename> -b <binary_coef> -v <vocal_sens> -s <sound_smooth>')
+    for entry in list[0]:
+        if entry[0] == '-b':
+            BIN_COEF = float(entry[1])
+        elif entry[0] == '-v':
+            VOCAL_SENSITIVITY = float(entry[1])
+        elif entry[0] == '-s':
+            SOUND_SMOOTHING = float(entry[1])
+    FILE_NAME = list[1][1]
+    print('Filename:', FILE_NAME, '-b:', BIN_COEF, '-s:', SOUND_SMOOTHING, '-v:', VOCAL_SENSITIVITY)
+
+
+handler(sys.argv)
 
 
 class Song(object):
@@ -43,14 +68,17 @@ class Song(object):
                 raise StopIteration
 
 
-def binarize(a, coeff=BINARIZATION_COEFF):
+def binarize(a, coeff=BIN_COEF):
     if a > coeff:
         return 1
     else:
         return 0
 
 
-test_song = librosa.load("C:/Users/Enoxus/Desktop/AEarFinal/tests/rock/before.mp3", sr=44100)[0]
+PATH_TO_FILE_BEFORE = 'C:/Users/ПК/PycharmProjects/AEar/AEar/Try2/audio/' + str(FILE_NAME)
+PATH_TO_FILE_AFTER = 'C:/Users/ПК/PycharmProjects/AEar/AEar/Try2/audio/after/' + str(FILE_NAME) + '.wav'
+
+test_song = librosa.load(PATH_TO_FILE_BEFORE, sr=44100)[0]
 
 song = Song(test_song)
 
@@ -123,7 +151,7 @@ for stft in song:
         for p in prediction:
             pred_bin.append(binarize(p))
         smooth_iter += 1
-        if smooth_iter == SMOOTH_RANGE:
+        if smooth_iter == SOUND_SMOOTHING:
             previous_vox = False
     elif vocal_prediction > VOCAL_SENSITIVITY:
         prediction = model.predict(stft)[0]
@@ -145,4 +173,4 @@ vox_stft = song.stft * binary
 
 print("finished processing in %s seconds" % (time.time() - start_time))
 
-write("C:/Users/Enoxus/Desktop/AEarFinal/tests/rock/after.wav", 44100, librosa.istft(vox_stft))
+write(PATH_TO_FILE_AFTER, 44100, librosa.istft(vox_stft))
