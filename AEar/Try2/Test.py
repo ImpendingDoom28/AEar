@@ -75,8 +75,8 @@ def binarize(a, coeff=BIN_COEF):
         return 0
 
 
-PATH_TO_FILE_BEFORE = 'C:/Users/ПК/PycharmProjects/AEar/AEar/Try2/audio/' + str(FILE_NAME)
-PATH_TO_FILE_AFTER = 'C:/Users/ПК/PycharmProjects/AEar/AEar/Try2/audio/after/' + str(FILE_NAME) + '.wav'
+PATH_TO_FILE_BEFORE = '/audio/' + str(FILE_NAME)
+PATH_TO_FILE_AFTER = '/audio/after/' + str(FILE_NAME) + '.wav'
 
 test_song = librosa.load(PATH_TO_FILE_BEFORE, sr=44100)[0]
 
